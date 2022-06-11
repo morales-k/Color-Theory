@@ -1,0 +1,147 @@
+import React, {useState, useEffect, useRef} from 'react'
+
+function Canvas() {
+  const centerWidth = document.getElementById('gameboard').offsetWidth / 2;
+  const centerHeight = document.getElementById('gameboard').offsetHeight / 2;
+  const orientation = window.matchMedia("(orientation: portrait)");
+  const [canvasCenterX, setCanvasCenterX] = useState(centerWidth);
+  const [canvasCenterY, setCanvasCenterY] = useState(centerHeight);
+  const [mouseX, setmouseX] = useState(centerWidth);
+  const [mouseY, setmouseY] = useState(centerHeight);
+  const [isPortrait, setPortrait] = useState(orientation.matches);
+  const canvas = useRef();
+  const dpr = window.devicePixelRatio || 1;
+  const cursorRadius = 10;
+
+  // Set up resize listener for responsive canvas.
+  useEffect(() => {
+    setupCanvas();
+
+    window.addEventListener('resize', () => {
+      setupCanvas();
+      setPortrait(orientation.matches);
+    });
+
+    // Clean up
+    return () => {
+      window.removeEventListener('resize', () => {
+        setupCanvas();
+        setPortrait(orientation.matches);
+      });
+    };
+  }, []);
+
+  // Redraw when mouse coordinates or orientation updates.
+  useEffect(() => {
+    draw();
+  }, [mouseX, mouseY, isPortrait]);
+
+  /* CANVAS OBJECTS */
+
+  // Color Wheel - Responsive
+  const colorWheel = (ctx) => {
+    // Find max radius that fits inside the canvas by dividing the smaller side by 2.
+    const widthSmaller = canvas.width < canvas.height ? true : false; 
+    const maxRadius = widthSmaller ? (window.screen.availWidth / 2) : (window.screen.availHeight / 2);
+    // Set a max radius and give it some breathing room.
+    const radius = maxRadius >= 400 ? 380 : maxRadius - 20;
+
+    // Create each wheel segment.
+    makeWheelSegments(ctx, radius);
+  };
+  
+  function makeWheelSegments(ctx, radius) {
+  const data = [30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30]; // If more values are added, add more colors.
+  let colorList = ['#ff0000', '#ff6800', '#ffa500', '#ffd200', '#ffff00', '#80bf00', '#008000', '#0d98ba', '#0000ff', '#800080', '#a00060', '#bf0040']; // Colors of each slice. Starts at 3 O'clock & goes clockwise.
+
+  let total = 0; // Automatically calculated so don't touch
+  let lastend = 0;
+  
+  for (let e = 0; e < data.length; e++) {
+    total += data[e];
+  }
+  
+  for (let i = 0; i < data.length; i++) {
+    ctx.fillStyle = colorList[i];
+    ctx.beginPath();
+    ctx.moveTo(canvasCenterX, canvasCenterY);
+    // Arc Parameters: x, y, radius, startingAngle (radians), endingAngle (radians), antiClockwise (boolean)
+    ctx.arc(canvasCenterX, canvasCenterY, radius, lastend, lastend + (Math.PI * 2 * (data[i] / total)), false);
+    ctx.lineTo(canvasCenterX, canvasCenterY);
+    ctx.fill();
+    lastend += Math.PI * 2 * (data[i] / total);
+  }
+}
+  
+  // CURSOR: Moves with mouseXY coords.
+  const cursor = (ctx, mouseX, mouseY) => {
+    ctx.beginPath();
+    ctx.arc(mouseX, mouseY, cursorRadius, 0, 2*Math.PI, false);
+    ctx.fillStyle = '#778899';
+    ctx.fill();
+  };
+  /*****/
+
+  // Sets canvas and scales based on device pixel ratio.
+  function setupCanvas() {
+    const rect = canvas.current.getBoundingClientRect();
+    const ctx = canvas.current.getContext('2d');
+    const resizedWidth = rect.width * dpr;
+    const resizedHeight = window.innerHeight * dpr;
+
+    // Scale the current canvas by device pixel ratio to fix blur.
+    canvas.current.width = resizedWidth;
+    canvas.current.height = resizedHeight;
+
+    // Set height of the canvas itself to fit screen.
+    canvas.height = resizedHeight;
+    ctx.scale(dpr, dpr);
+
+    // Update canvas center when resized.
+    setCanvasCenterX(rect.width / 2);
+    setCanvasCenterY(rect.height / 2);
+    return ctx;
+  }
+
+  // Clears & redraws the canvas.
+  function draw() {
+    const ctx = canvas.current.getContext('2d');
+    const rect = canvas.current.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    colorWheel(ctx);
+    cursor(ctx, mouseX, mouseY);
+  }
+
+  // Updates mouse coordinates & detects if mouse touches edge.
+  function trackmouse(e) {
+    const rect = canvas.current.getBoundingClientRect();
+    const leftEdgeCollision = e.clientX <= cursorRadius ? true : false;
+    const rightEdgeCollision = e.clientX >= rect.width - cursorRadius ? true : false;
+    const topEdgeCollision = e.clientY <= cursorRadius ? true : false;
+    const bottomEdgeCollision = e.clientY >= rect.height - cursorRadius ? true : false;
+    
+    // Reset coords if mouse touches edge.
+    if (leftEdgeCollision) {
+      setmouseX(cursorRadius);
+    } else if (topEdgeCollision) {
+      setmouseY(cursorRadius);
+    } else if (rightEdgeCollision) {
+      setmouseX(rect.width - cursorRadius);
+    } else if (bottomEdgeCollision) {
+      setmouseY(rect.height - cursorRadius);
+    } else {
+      // In bounds. Update coords.
+      setmouseX(e.clientX);
+      setmouseY(e.clientY);
+    }
+  }
+
+  return (
+    <canvas id="canvas" ref={canvas} onMouseMove={(e) => trackmouse(e)} />
+  )
+}
+
+export default Canvas
