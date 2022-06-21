@@ -11,7 +11,6 @@ function Canvas() {
   const [isPortrait, setPortrait] = useState(orientation.matches);
   const canvas = useRef();
   const dpr = window.devicePixelRatio || 1;
-  const cursorRadius = 10;
 
   // Set up resize listener for responsive canvas.
   useEffect(() => {
@@ -46,10 +45,10 @@ function Canvas() {
     // Set a max radius and give it some breathing room.
     const radius = maxRadius >= 400 ? 380 : maxRadius - 20;
 
-    // Create each wheel segment.
     makeWheelSegments(ctx, radius);
   };
   
+  // Create each wheel segment.
   function makeWheelSegments(ctx, radius) {
   const data = [30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30]; // If more values are added, add more colors.
   let colorList = ['#ff0000', '#ff6800', '#ffa500', '#ffd200', '#ffff00', '#80bf00', '#008000', '#0d98ba', '#0000ff', '#800080', '#a00060', '#bf0040']; // Colors of each slice. Starts at 3 O'clock & goes clockwise.
@@ -72,14 +71,6 @@ function Canvas() {
     lastend += Math.PI * 2 * (data[i] / total);
   }
 }
-  
-  // CURSOR: Moves with mouseXY coords.
-  const cursor = (ctx, mouseX, mouseY) => {
-    ctx.beginPath();
-    ctx.arc(mouseX, mouseY, cursorRadius, 0, 2*Math.PI, false);
-    ctx.fillStyle = '#778899';
-    ctx.fill();
-  };
   /*****/
 
   // Sets canvas and scales based on device pixel ratio.
@@ -112,35 +103,29 @@ function Canvas() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     colorWheel(ctx);
-    cursor(ctx, mouseX, mouseY);
   }
 
-  // Updates mouse coordinates & detects if mouse touches edge.
+  // Updates mouse coordinates.
   function trackmouse(e) {
-    const rect = canvas.current.getBoundingClientRect();
-    const leftEdgeCollision = e.clientX <= cursorRadius ? true : false;
-    const rightEdgeCollision = e.clientX >= rect.width - cursorRadius ? true : false;
-    const topEdgeCollision = e.clientY <= cursorRadius ? true : false;
-    const bottomEdgeCollision = e.clientY >= rect.height - cursorRadius ? true : false;
-    
-    // Reset coords if mouse touches edge.
-    if (leftEdgeCollision) {
-      setmouseX(cursorRadius);
-    } else if (topEdgeCollision) {
-      setmouseY(cursorRadius);
-    } else if (rightEdgeCollision) {
-      setmouseX(rect.width - cursorRadius);
-    } else if (bottomEdgeCollision) {
-      setmouseY(rect.height - cursorRadius);
-    } else {
-      // In bounds. Update coords.
-      setmouseX(e.clientX);
-      setmouseY(e.clientY);
-    }
+    setmouseX(e.clientX);
+    setmouseY(e.clientY);
+  }
+
+  // Gets the current color on click/touch. Mobile values should be multiplied by dpr for correct color selection.
+  function getCurrentColor(e, isTouch = false) {
+    const xPos = isTouch ? e.changedTouches[0].clientX * dpr : e.clientX;
+    const yPos = isTouch ? e.changedTouches[0].clientY * dpr : e.clientY;
+    const ctx = canvas.current.getContext('2d');
+    let imgData = ctx.getImageData(xPos, yPos, 1, 1);
+    let red = imgData.data[0];
+    let green = imgData.data[1];
+    let blue = imgData.data[2];
+    let alpha = imgData.data[3];
+    console.log(red + " " + green + " " + blue + " " + alpha);
   }
 
   return (
-    <canvas id="canvas" ref={canvas} onMouseMove={(e) => trackmouse(e)} />
+    <canvas id="canvas" ref={canvas} onTouchEnd={(e) => getCurrentColor(e, true)} onClick={(e) => getCurrentColor(e, false)} />
   )
 }
 
