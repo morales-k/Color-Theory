@@ -6,9 +6,10 @@ function Canvas() {
   const orientation = window.matchMedia("(orientation: portrait)");
   const [canvasCenterX, setCanvasCenterX] = useState(centerWidth);
   const [canvasCenterY, setCanvasCenterY] = useState(centerHeight);
-  const [mouseX, setmouseX] = useState(centerWidth);
-  const [mouseY, setmouseY] = useState(centerHeight);
   const [isPortrait, setPortrait] = useState(orientation.matches);
+  const [prevColor, setPrevColor] = useState(''); // Hex string.
+  const [currentColor, setCurrentColor] = useState(''); // Hex string.
+  const [colorList, setColorList] = useState(['#ff0000', '#898989', '#adadad', '#c8c8c8', '#ffff00', '#979797', '#4b4b4b', '#727272', '#0000ff', '#343434', '#3a3a3a', '#404040']); // Colors of each slice. Starts at 3 O'clock & goes clockwise.
   const canvas = useRef();
   const dpr = window.devicePixelRatio || 1;
 
@@ -30,10 +31,13 @@ function Canvas() {
     };
   }, []);
 
-  // Redraw when mouse coordinates or orientation updates.
+  // Redraw when orientation or currentColor changes.
   useEffect(() => {
+    if (currentColor.length === 7) {
+      checkColorMix();
+    }
     draw();
-  }, [mouseX, mouseY, isPortrait]);
+  }, [currentColor, isPortrait]);
 
   /* CANVAS OBJECTS */
 
@@ -51,8 +55,6 @@ function Canvas() {
   // Create each wheel segment.
   function makeWheelSegments(ctx, radius) {
   const data = [30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30]; // If more values are added, add more colors.
-  let colorList = ['#ff0000', '#ff6800', '#ffa500', '#ffd200', '#ffff00', '#80bf00', '#008000', '#0d98ba', '#0000ff', '#800080', '#a00060', '#bf0040']; // Colors of each slice. Starts at 3 O'clock & goes clockwise.
-
   let total = 0; // Automatically calculated so don't touch
   let lastend = 0;
   
@@ -105,12 +107,6 @@ function Canvas() {
     colorWheel(ctx);
   }
 
-  // Updates mouse coordinates.
-  function trackmouse(e) {
-    setmouseX(e.clientX);
-    setmouseY(e.clientY);
-  }
-
   // Gets the current color on click/touch. Mobile values should be multiplied by dpr for correct color selection.
   function getCurrentColor(e, isTouch = false) {
     const xPos = isTouch ? e.changedTouches[0].clientX * dpr : e.clientX;
@@ -120,8 +116,47 @@ function Canvas() {
     let red = imgData.data[0];
     let green = imgData.data[1];
     let blue = imgData.data[2];
-    let alpha = imgData.data[3];
-    console.log(red + " " + green + " " + blue + " " + alpha);
+    let hexColor = ConvertRGBtoHex(red, green, blue);
+
+    // Set prevColor before updating currentColor.
+    setPrevColor(currentColor);
+    setCurrentColor(hexColor);
+  }
+
+  // Takes a number value & converts it to a 2 digit hex string.
+  function ColorToHex(color) {
+    var hexadecimal = color.toString(16);
+    return hexadecimal.length == 1 ? "0" + hexadecimal : hexadecimal;
+  }
+  
+  // Returns 6 digit hex string based on number values of rgb.
+  function ConvertRGBtoHex(red, green, blue) {
+    return "#" + ColorToHex(red) + ColorToHex(green) + ColorToHex(blue);
+  }
+
+  // When currentColor changes, check if currentColor + prevColor would make a secondary or tertiary color.
+  function checkColorMix() {
+    console.log(`color CHANGE! prev ${prevColor} current ${currentColor}`);
+  }
+
+  function findColorEquivalent(hex) {
+    const colorMap = new Map([
+      ['#4c4c4c', '#ff0000'],
+      ['#898989', '#ff6800'],
+      ['#adadad', '#ffa500'],
+      ['#c8c8c8', '#ffd200'],
+      ['#e2e2e2', '#ffff00'],
+      ['#979797', '#80bf00'],
+      ['#4b4b4b', '#008000'],
+      ['#727272', '#0d98ba'],
+      ['#1c1c1c', '#0000ff'],
+      ['#343434', '#800080'],
+      ['#3a3a3a', '#a00060'],
+      ['#404040', '#bf0040'],
+    ]);
+    let value = colorMap.get(hex);
+
+    console.log(`Hex key ${hex} has a value of ${value}`);
   }
 
   return (
