@@ -1,0 +1,100 @@
+{
+  "colors": [
+    {
+      "id": 1,
+      "name": "red",
+      "hex": "#ff0000",
+      "greyscale": "#4c4c4c",
+      "type": "primary",
+      "mix": []
+    },
+    {
+      "id": 2,
+      "name": "yellow",
+      "hex": "#ffff00",
+      "greyscale": "#e2e2e2",
+      "type": "primary",
+      "mix": []
+    },
+    {
+      "id": 3,
+      "name": "blue",
+      "hex": "#0000ff",
+      "greyscale": "#1c1c1c",
+      "type": "primary",
+      "mix": []
+    },
+    {
+      "id": 4,
+      "name": "orange",
+      "hex": "#ffa500",
+      "greyscale": "#adadad",
+      "type": "secondary",
+      "mix": ["#ff0000", "#ffff00"]
+    },
+    {
+      "id": 5,
+      "name": "green",
+      "hex": "#008000",
+      "greyscale": "#4b4b4b",
+      "type": "secondary",
+      "mix": ["#0000ff", "#ffff00"]
+    },
+    {
+      "id": 6,
+      "name": "violet",
+      "hex": "#a00060",
+      "greyscale": "#3a3a3a",
+      "type": "secondary",
+      "mix": ["#0000ff", "#ff0000"]
+    },
+    {
+      "id": 7,
+      "name": "yellow-orange",
+      "hex": "#ffd200",
+      "greyscale": "#c8c8c8",
+      "type": "tertiary",
+      "mix": ["#ffa500", "#ffff00"]
+    },
+    {
+      "id": 8,
+      "name": "red-orange",
+      "hex": "#ff6800",
+      "greyscale": "#898989",
+      "type": "tertiary",
+      "mix": ["#ff0000", "#ffa500"]
+    },
+    {
+      "id": 9,
+      "name": "red-violet",
+      "hex": "#bf0040",
+      "greyscale": "#404040",
+      "type": "tertiary",
+      "mix": ["#ff0000", "#a00060"]
+    },
+    {
+      "id": 10,
+      "name": "blue-violet",
+      "hex": "#800080",
+      "greyscale": "#343434",
+      "type": "tertiary",
+      "mix": ["#0000ff", "#a00060"]
+    },
+    {
+      "id": 11,
+      "name": "blue-green",
+      "hex": "#0d98ba",
+      "greyscale": "#727272",
+      "type": "tertiary",
+      "mix": ["#0000ff", "#008000"]
+    },
+    {
+      "id": 12,
+      "name": "yellow-green",
+      "hex": "#80bf00",
+      "greyscale": "#979797",
+      "type": "tertiary",
+      "mix": ["#008000", "#ffff00"]
+    }
+  ]
+}

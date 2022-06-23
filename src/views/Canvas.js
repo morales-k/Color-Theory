@@ -1,4 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react'
+import allColors from '../assets/colors.json';
 
 function Canvas() {
   const centerWidth = document.getElementById('gameboard').offsetWidth / 2;
@@ -39,6 +40,10 @@ function Canvas() {
     draw();
   }, [currentColor, isPortrait]);
 
+  useEffect(() => {
+    draw();
+  }, [colorList]);
+
   /* CANVAS OBJECTS */
 
   // Color Wheel - Responsive
@@ -54,8 +59,8 @@ function Canvas() {
   
   // Create each wheel segment.
   function makeWheelSegments(ctx, radius) {
-  const data = [30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30]; // If more values are added, add more colors.
-  let total = 0; // Automatically calculated so don't touch
+  const data = [30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30]; // Length should equal colorList.length.
+  let total = 0; // Automatically calculated so don't touch.
   let lastend = 0;
   
   for (let e = 0; e < data.length; e++) {
@@ -103,7 +108,6 @@ function Canvas() {
     canvas.width = rect.width * dpr;
     canvas.height = rect.height * dpr;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
     colorWheel(ctx);
   }
 
@@ -134,29 +138,26 @@ function Canvas() {
     return "#" + ColorToHex(red) + ColorToHex(green) + ColorToHex(blue);
   }
 
-  // When currentColor changes, check if currentColor + prevColor would make a secondary or tertiary color.
+  // Checks if 2 colors make a new color.
   function checkColorMix() {
-    console.log(`color CHANGE! prev ${prevColor} current ${currentColor}`);
+    allColors.colors.map(color => {
+      if (color.mix.includes(prevColor) && color.mix.includes(currentColor)) {
+        // Reset color selection.
+        setPrevColor('');
+        setCurrentColor('');
+        // Display the mixed color.
+        findColorEquivalent(color.greyscale, color.hex);
+      }
+    })
   }
 
-  function findColorEquivalent(hex) {
-    const colorMap = new Map([
-      ['#4c4c4c', '#ff0000'],
-      ['#898989', '#ff6800'],
-      ['#adadad', '#ffa500'],
-      ['#c8c8c8', '#ffd200'],
-      ['#e2e2e2', '#ffff00'],
-      ['#979797', '#80bf00'],
-      ['#4b4b4b', '#008000'],
-      ['#727272', '#0d98ba'],
-      ['#1c1c1c', '#0000ff'],
-      ['#343434', '#800080'],
-      ['#3a3a3a', '#a00060'],
-      ['#404040', '#bf0040'],
-    ]);
-    let value = colorMap.get(hex);
-
-    console.log(`Hex key ${hex} has a value of ${value}`);
+  
+  // Finds the greyscale color in colorList & replaces it with hex.
+  function findColorEquivalent(greyscale, hex) {
+    let updatedList = [...colorList];
+    let updateIndex = updatedList.indexOf(greyscale);
+    updatedList[updateIndex] = hex;
+    setColorList(updatedList);
   }
 
   return (
