@@ -52,7 +52,7 @@ function Canvas() {
     const widthSmaller = canvas.width < canvas.height ? true : false; 
     const maxRadius = widthSmaller ? (window.screen.availWidth / 2) : (window.screen.availHeight / 2);
     // Set a max radius and give it some breathing room.
-    const radius = maxRadius >= 400 ? 380 : maxRadius - 20;
+    const radius = maxRadius >= 400 ? 360 : maxRadius - 40;
 
     makeWheelSegments(ctx, radius);
   };
@@ -111,10 +111,11 @@ function Canvas() {
     colorWheel(ctx);
   }
 
-  // Gets the current color on click/touch. Mobile values should be multiplied by dpr for correct color selection.
+  // Gets the current color on click/touch. Values should be multiplied by dpr for correct color selection.
   function getCurrentColor(e, isTouch = false) {
-    const xPos = isTouch ? e.changedTouches[0].clientX * dpr : e.clientX;
-    const yPos = isTouch ? e.changedTouches[0].clientY * dpr : e.clientY;
+    e.preventDefault(); // Prevents multiple touch/click events.
+    const xPos = isTouch ? e.changedTouches[0].clientX * dpr : e.clientX * dpr;
+    const yPos = isTouch ? e.changedTouches[0].clientY * dpr : e.clientY * dpr;
     const ctx = canvas.current.getContext('2d');
     let imgData = ctx.getImageData(xPos, yPos, 1, 1);
     let red = imgData.data[0];
@@ -123,14 +124,14 @@ function Canvas() {
     let hexColor = ConvertRGBtoHex(red, green, blue);
 
     // Set prevColor before updating currentColor.
-    setPrevColor(currentColor);
-    setCurrentColor(hexColor);
+      setPrevColor(currentColor);
+      setCurrentColor(hexColor);
   }
 
   // Takes a number value & converts it to a 2 digit hex string.
   function ColorToHex(color) {
     var hexadecimal = color.toString(16);
-    return hexadecimal.length == 1 ? "0" + hexadecimal : hexadecimal;
+    return hexadecimal.length === 1 ? "0" + hexadecimal : hexadecimal;
   }
   
   // Returns 6 digit hex string based on number values of rgb.
@@ -148,7 +149,7 @@ function Canvas() {
         // Display the mixed color.
         findColorEquivalent(color.greyscale, color.hex);
       }
-    })
+    });
   }
 
   
