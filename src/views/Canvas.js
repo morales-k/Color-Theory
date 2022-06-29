@@ -1,4 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react'
+import {selectedColors, colorInfo, colorWheel} from '../assets/canvasObjects';
 import allColors from '../assets/colors.json';
 
 function Canvas() {
@@ -44,59 +45,6 @@ function Canvas() {
     draw();
   }, [colorList]);
 
-  /* CANVAS OBJECTS */
-  const selectedColors = (ctx) => {
-    ctx.beginPath();
-    ctx.fillStyle = currentColor.toString();
-    ctx.arc(150, 43, 10, 0, 2 * Math.PI);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.fillStyle = prevColor.toString();
-    ctx.arc(150, 73, 10, 0, 2 * Math.PI);
-    ctx.fill();
-  };
-
-  const colorInfo = (ctx) => {
-    ctx.font = "18px Arial";
-    ctx.fillStyle = "black";
-    ctx.fillText('Current color:', 10, 50);
-    ctx.fillText('Previous color:', 10, 80);
-  };
-
-  // Color Wheel - Responsive
-  const colorWheel = (ctx) => {
-    // Find max radius that fits inside the canvas by dividing the smaller side by 2.
-    const widthSmaller = canvas.width < canvas.height ? true : false; 
-    const maxRadius = widthSmaller ? (window.screen.availWidth / 2) : (window.screen.availHeight / 2);
-    // Set a max radius and give it some breathing room.
-    const radius = maxRadius >= 400 ? 360 : maxRadius - 40;
-
-    makeWheelSegments(ctx, radius);
-  };
-  
-  // Create each wheel segment.
-  function makeWheelSegments(ctx, radius) {
-  const data = [30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30]; // Length should equal colorList.length.
-  let total = 0; // Automatically calculated so don't touch.
-  let lastend = 0;
-  
-  for (let e = 0; e < data.length; e++) {
-    total += data[e];
-  }
-  
-  for (let i = 0; i < data.length; i++) {
-    ctx.fillStyle = colorList[i];
-    ctx.beginPath();
-    ctx.moveTo(canvasCenterX, canvasCenterY);
-    // Arc Parameters: x, y, radius, startingAngle (radians), endingAngle (radians), antiClockwise (boolean)
-    ctx.arc(canvasCenterX, canvasCenterY, radius, lastend, lastend + (Math.PI * 2 * (data[i] / total)), false);
-    ctx.lineTo(canvasCenterX, canvasCenterY);
-    ctx.fill();
-    lastend += Math.PI * 2 * (data[i] / total);
-  }
-}
-  /*****/
-
   // Sets canvas and scales based on device pixel ratio.
   function setupCanvas() {
     const rect = canvas.current.getBoundingClientRect();
@@ -125,9 +73,9 @@ function Canvas() {
     canvas.width = rect.width * dpr;
     canvas.height = rect.height * dpr;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    colorWheel(ctx);
+    colorWheel(canvas, ctx, canvasCenterX, canvasCenterY, colorList);
     colorInfo(ctx);
-    selectedColors(ctx);
+    selectedColors(ctx, currentColor, prevColor);
   }
 
   // Gets the current color on click/touch. Values should be multiplied by dpr for correct color selection.
