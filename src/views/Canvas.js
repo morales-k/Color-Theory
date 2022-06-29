@@ -45,6 +45,23 @@ function Canvas() {
   }, [colorList]);
 
   /* CANVAS OBJECTS */
+  const selectedColors = (ctx) => {
+    ctx.beginPath();
+    ctx.fillStyle = currentColor.toString();
+    ctx.arc(150, 43, 10, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.fillStyle = prevColor.toString();
+    ctx.arc(150, 73, 10, 0, 2 * Math.PI);
+    ctx.fill();
+  };
+
+  const colorInfo = (ctx) => {
+    ctx.font = "18px Arial";
+    ctx.fillStyle = "black";
+    ctx.fillText('Current color:', 10, 50);
+    ctx.fillText('Previous color:', 10, 80);
+  };
 
   // Color Wheel - Responsive
   const colorWheel = (ctx) => {
@@ -109,6 +126,8 @@ function Canvas() {
     canvas.height = rect.height * dpr;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     colorWheel(ctx);
+    colorInfo(ctx);
+    selectedColors(ctx);
   }
 
   // Gets the current color on click/touch. Values should be multiplied by dpr for correct color selection.
@@ -143,9 +162,6 @@ function Canvas() {
   function checkColorMix() {
     allColors.colors.map(color => {
       if (color.mix.includes(prevColor) && color.mix.includes(currentColor)) {
-        // Reset color selection.
-        setPrevColor('');
-        setCurrentColor('');
         // Display the mixed color.
         findColorEquivalent(color.greyscale, color.hex);
       }
