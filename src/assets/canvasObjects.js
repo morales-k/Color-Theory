@@ -1,13 +1,15 @@
 // Selected color circles.
 const selectedColors = (ctx, currentColor, prevColor) => {
     ctx.beginPath();
-    ctx.fillStyle = currentColor.toString();
+    ctx.fillStyle = currentColor.length < 1 ? 'white' : currentColor.toString();
     ctx.arc(150, 43, 10, 0, 2 * Math.PI);
     ctx.fill();
+    ctx.stroke();
     ctx.beginPath();
-    ctx.fillStyle = prevColor.toString();
+    ctx.fillStyle = prevColor.length < 1 ? 'white' : prevColor.toString();
     ctx.arc(150, 73, 10, 0, 2 * Math.PI);
     ctx.fill();
+    ctx.stroke();
 };
 
 // Previous & current color text.
@@ -16,6 +18,18 @@ const colorInfo = (ctx) => {
     ctx.fillStyle = "black";
     ctx.fillText('Current color:', 10, 50);
     ctx.fillText('Previous color:', 10, 80);
+};
+
+// ? icon.
+const infoIcon = (ctx) => {
+    ctx.beginPath();
+    ctx.arc(document.body.clientWidth - 21, 21, 10, 0, 2 * Math.PI);
+    ctx.fillStyle = 'white';
+    ctx.fill();
+    ctx.stroke();
+    ctx.font = "14px Arial";
+    ctx.fillStyle = "black";
+    ctx.fillText('?', document.body.clientWidth - 25, 26);
 };
 
 // Finds max radius that fits inside the canvas & sets each color segments radius.
@@ -47,4 +61,4 @@ const colorWheel = (canvas, ctx, canvasCenterX, canvasCenterY, colorList) => {
     lastend += Math.PI * 2 * (data[i] / total);
   }
 }
-export {selectedColors, colorInfo, colorWheel};
+export {selectedColors, colorInfo, colorWheel, infoIcon};

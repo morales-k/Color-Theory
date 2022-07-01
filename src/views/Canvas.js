@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useRef} from 'react'
-import {selectedColors, colorInfo, colorWheel} from '../assets/canvasObjects';
+import {selectedColors, colorInfo, colorWheel, infoIcon} from '../assets/canvasObjects';
 import allColors from '../assets/colors.json';
+import Dialog from './Dialog';
 
 function Canvas() {
   const centerWidth = document.getElementById('gameboard').offsetWidth / 2;
@@ -12,6 +13,7 @@ function Canvas() {
   const [prevColor, setPrevColor] = useState(''); // Hex string.
   const [currentColor, setCurrentColor] = useState(''); // Hex string.
   const [colorList, setColorList] = useState(['#ff0000', '#898989', '#adadad', '#c8c8c8', '#ffff00', '#979797', '#4b4b4b', '#727272', '#0000ff', '#343434', '#3a3a3a', '#404040']); // Colors of each slice. Starts at 3 O'clock & goes clockwise.
+  const [showDialog, toggleDialog] = useState(false);
   const canvas = useRef();
   const dpr = window.devicePixelRatio || 1;
 
@@ -76,6 +78,7 @@ function Canvas() {
     colorWheel(canvas, ctx, canvasCenterX, canvasCenterY, colorList);
     colorInfo(ctx);
     selectedColors(ctx, currentColor, prevColor);
+    infoIcon(ctx);
   }
 
   // Gets the current color on click/touch. Values should be multiplied by dpr for correct color selection.
@@ -85,10 +88,14 @@ function Canvas() {
     const yPos = isTouch ? e.changedTouches[0].clientY * dpr : e.clientY * dpr;
     const ctx = canvas.current.getContext('2d');
     let imgData = ctx.getImageData(xPos, yPos, 1, 1);
-    let red = imgData.data[0];
-    let green = imgData.data[1];
-    let blue = imgData.data[2];
-    let hexColor = ConvertRGBtoHex(red, green, blue);
+    let hexColor = ConvertRGBtoHex(imgData.data[0], imgData.data[1], imgData.data[2]); // RGB values.
+
+    // Check if infoIcon was clicked.
+    let info = new Path2D();
+    info.arc(document.body.clientWidth - 21, 21, 10, 0, 2 * Math.PI);
+    if (ctx.isPointInPath(info, xPos, yPos)) {
+      toggleDialog(!showDialog);
+    }
 
     // Set prevColor before updating currentColor.
       setPrevColor(currentColor);
@@ -115,7 +122,6 @@ function Canvas() {
       }
     });
   }
-
   
   // Finds the greyscale color in colorList & replaces it with hex.
   function findColorEquivalent(greyscale, hex) {
@@ -126,7 +132,12 @@ function Canvas() {
   }
 
   return (
+    <>
+    {
+      showDialog && <Dialog />
+    }
     <canvas id="canvas" ref={canvas} onTouchEnd={(e) => getCurrentColor(e, true)} onClick={(e) => getCurrentColor(e, false)} />
+    </>
   )
 }
 
