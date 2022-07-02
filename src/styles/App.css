@@ -1,10 +1,13 @@
+html, body {
+  overflow: hidden;
+}
+
 body {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   background-color: gray;
-  overflow: hidden;
 }
 
 #gameboard {
@@ -56,10 +59,26 @@ body {
 
 .dialog {
   width: 80%;
+  height: 80vh;
   position: absolute;
   z-index: 2;
+  display: flex;
+  flex-direction: column;
   background-color: #f2f2f2;
   border-radius: 2px;
-  border: 2px solid #1a1a1a;
+  border: 4px double #1a1a1a;
   margin-top: 10%;
+  overflow-y: scroll;
+  border-left-color: #0000ff;
+  border-top-color: #0000ff;
+  border-right-color: #ff0000;
+  border-bottom-color: #ff0000;
+}
+
+.dialog h1 {
+  margin-bottom: 0;
+}
+
+.dialog p {
+  padding: 0 4%;
 }
