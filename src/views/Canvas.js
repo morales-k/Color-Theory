@@ -1,9 +1,12 @@
 import React, {useState, useEffect, useRef} from 'react'
 import {selectedColors, colorInfo, colorWheel, infoIcon} from '../assets/canvasObjects';
 import allColors from '../assets/colors.json';
+import win from '../assets/sounds/win.mp3';
+import drop from '../assets/sounds/drop.mp3';
 import Dialog from './Dialog';
 
 function Canvas() {
+  const originalColors = ['#ff0000', '#898989', '#adadad', '#c8c8c8', '#ffff00', '#979797', '#4b4b4b', '#727272', '#0000ff', '#343434', '#3a3a3a', '#404040'];
   const centerWidth = document.getElementById('gameboard').offsetWidth / 2;
   const centerHeight = document.getElementById('gameboard').offsetHeight / 2;
   const orientation = window.matchMedia("(orientation: portrait)");
@@ -12,8 +15,9 @@ function Canvas() {
   const [isPortrait, setPortrait] = useState(orientation.matches);
   const [prevColor, setPrevColor] = useState(''); // Hex string.
   const [currentColor, setCurrentColor] = useState(''); // Hex string.
-  const [colorList, setColorList] = useState(['#ff0000', '#898989', '#adadad', '#c8c8c8', '#ffff00', '#979797', '#4b4b4b', '#727272', '#0000ff', '#343434', '#3a3a3a', '#404040']); // Colors of each slice. Starts at 3 O'clock & goes clockwise.
+  const [colorList, setColorList] = useState(originalColors); // Colors of each slice. Starts at 3 O'clock & goes clockwise.
   const [showDialog, toggleDialog] = useState(false);
+  const [foundColors, setFoundColors] = useState(3); // Start with 3 of 12 since primaries visible.
   const canvas = useRef();
   const dpr = window.devicePixelRatio || 1;
 
@@ -116,7 +120,18 @@ function Canvas() {
   // Checks if 2 colors make a new color.
   function checkColorMix() {
     allColors.colors.map(color => {
-      if (color.mix.includes(prevColor) && color.mix.includes(currentColor)) {
+      if (!colorList.includes(color.hex) && color.mix.includes(prevColor) && color.mix.includes(currentColor)) {
+        const dropSound = new Audio(drop);
+        let numberFound = foundColors + 1;
+
+        dropSound.play();
+        setFoundColors(numberFound);
+
+        if (numberFound === 12) {
+          const winSound = new Audio(win);
+          winSound.play();
+        }
+
         // Display the mixed color.
         findColorEquivalent(color.greyscale, color.hex);
       }
@@ -131,10 +146,20 @@ function Canvas() {
     setColorList(updatedList);
   }
 
+  function resetGame() {
+    setFoundColors(3);
+    setPrevColor('');
+    setCurrentColor('');
+    setColorList(originalColors);
+  }
+
   return (
     <>
     {
-      showDialog && <Dialog toggleDialog={toggleDialog} />
+      showDialog && <Dialog showDialog={showDialog} toggleDialog={toggleDialog} win={false} />
+    }
+    {
+      foundColors === 12 && <Dialog showDialog={showDialog} toggleDialog={toggleDialog} win={true} resetGame={resetGame} />
     }
     <canvas id="canvas" ref={canvas} onTouchEnd={(e) => getCurrentColor(e, true)} onClick={(e) => getCurrentColor(e, false)} />
     </>
