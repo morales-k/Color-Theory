@@ -134,7 +134,7 @@ function Canvas() {
   return (
     <>
     {
-      showDialog && <Dialog />
+      showDialog && <Dialog toggleDialog={toggleDialog} />
     }
     <canvas id="canvas" ref={canvas} onTouchEnd={(e) => getCurrentColor(e, true)} onClick={(e) => getCurrentColor(e, false)} />
     </>

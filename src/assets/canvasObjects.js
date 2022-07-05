@@ -36,7 +36,7 @@ const infoIcon = (ctx) => {
 const colorWheel = (canvas, ctx, canvasCenterX, canvasCenterY, colorList) => {
     const widthSmaller = canvas.width < canvas.height ? true : false; 
     const maxRadius = widthSmaller ? (window.screen.availWidth / 2) : (window.screen.availHeight / 2);
-    const radius = maxRadius >= 400 ? 360 : maxRadius - 40; // Add breathing room.
+    const radius = maxRadius >= 400 ? 340 : maxRadius - 60; // Add breathing room.
     makeWheelSegments(ctx, radius, canvasCenterX, canvasCenterY, colorList);
   };
   

@@ -57,17 +57,21 @@ body {
   color: #1a1a1a;
 }
 
-.dialog {
+.dialog-container {
   width: 80%;
-  height: 80vh;
+  height: 80%;
+  margin: 5%;
   position: absolute;
   z-index: 2;
   display: flex;
   flex-direction: column;
+  align-items: center;
+}
+
+.dialog {
   background-color: #f2f2f2;
   border-radius: 2px;
   border: 4px double #1a1a1a;
-  margin-top: 10%;
   overflow-y: scroll;
   border-left-color: #0000ff;
   border-top-color: #0000ff;
@@ -80,5 +84,30 @@ body {
 }
 
 .dialog p {
-  padding: 0 4%;
+  max-width: 400px;
+  padding: 2% 4%;
+}
+
+.close-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  margin: 2%;
+  background-color: transparent;
+  color: #ff0000;
+  border: none;
+  font-weight: bold;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+@media screen and (min-width: 601px) {
+  .dialog-container {
+    width: 75%;
+    max-width: 500px;
+  }
+
+  .dialog p {
+    max-width: 450px;
+  }
 }
