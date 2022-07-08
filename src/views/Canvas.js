@@ -48,8 +48,9 @@ function Canvas() {
   }, [currentColor, isPortrait]);
 
   useEffect(() => {
+    setupCanvas();
     draw();
-  }, [colorList]);
+  }, [colorList, canvasCenterX, canvasCenterY]);
 
   // Sets canvas and scales based on device pixel ratio.
   function setupCanvas() {
