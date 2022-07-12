@@ -25,7 +25,13 @@ body {
   object-fit: contain;
   align-self: center;
   box-sizing: border-box;
-  background-color: #e3e3e3;
+  background:
+  radial-gradient(#dcdcdc 15%, transparent 16%) 0 0,
+  radial-gradient(#dcdcdc 15%, transparent 16%) 8px 8px,
+  linear-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
+  linear-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
+  background-color:#e3e3e3;
+  background-size:16px 16px;
 }
 
 .start-btn {
