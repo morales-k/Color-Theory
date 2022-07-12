@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/Color-Theory/static/css/main.696f2089.css",
+    "main.js": "/Color-Theory/static/js/main.46108f30.js",
+    "static/media/win.mp3": "/Color-Theory/static/media/win.4c04bbc539116b0a76bd.mp3",
+    "static/media/drop.mp3": "/Color-Theory/static/media/drop.104e70a9c2f77764e95b.mp3",
+    "index.html": "/Color-Theory/index.html",
+    "main.696f2089.css.map": "/Color-Theory/static/css/main.696f2089.css.map",
+    "main.46108f30.js.map": "/Color-Theory/static/js/main.46108f30.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.696f2089.css",
+    "static/js/main.46108f30.js"
+  ]
+}
